@@ -486,10 +486,12 @@ class NoteCommentHandler(SyncHandler):
             return False
         # Check the event payload and reject the event if we don't have what we
         # expect
-        jira_issue = event.get("issue")
-        if not jira_issue:
-            self._logger.debug("Rejecting event without an issue: %s" % event)
-            return False
+# SurviosBeginChange - comment_updated webhook doesn't send the issue.
+# We only need the issue key and that's the resource_id anyway.
+#        jira_issue = event.get("issue")
+#        if not jira_issue:
+#            self._logger.debug("Rejecting event without an issue: %s" % event)
+#            return False
         
         jira_comment = event.get("comment")
         if not jira_comment:
@@ -523,14 +525,15 @@ class NoteCommentHandler(SyncHandler):
         :returns: True if the event was successfully processed, False if the
                   sync didn't happen for any reason.
         """
-        jira_issue = event["issue"]
+# SurviosBeginChange - comment_updated webhook doesn't send the issue.
+#        jira_issue = event["issue"]
         jira_comment = event["comment"]
         webhook_event = event["webhookEvent"]
 
         # construct our Jira key for Notes and check if we have an existing
         # Shotgun Note to update.
         # key <jira issue key>/<jira comment id>.
-        sg_jira_key = "%s/%s" % (jira_issue["key"], jira_comment["id"])                
+        sg_jira_key = "%s/%s" % (resource_id, jira_comment["id"]) #SurviosBeginChange the issue key is the resource_id               
         sg_notes = self._shotgun.find(
             "Note",
             [[SHOTGUN_JIRA_ID_FIELD, "is", sg_jira_key]],

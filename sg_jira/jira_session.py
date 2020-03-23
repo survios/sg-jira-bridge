@@ -308,7 +308,7 @@ class JiraSession(jira.client.JIRA):
                     "Found multiple assignable Jira users with email address %s. "
                     "Using the first one: %s" % (
                         user_email,
-                        ["%s (%s)" % (ju.emailAddress, ju.user) for ju in jira_users]
+                        ["%s (%s)" % (ju.emailAddress, ju.displayName) for ju in jira_users] #SurviosBeginChange user is wrong?
                     )
                 )
             logger.debug("Found Jira Assignee %s" % jira_assignee)
@@ -522,6 +522,9 @@ class JiraSession(jira.client.JIRA):
         # Make a shallow copy so we can add/delete keys
         data = dict(data)
         data["issuetype"] = jira_issue_type.raw
+
+        #SurviosBeginChange match the components field to format required by Jira
+        data["components"] = filter(lambda x: x['name'] == data["components"], fields_createmeta['components']['allowedValues'])
 
         # Check if we are missing any required data which does not have a default
         # value.

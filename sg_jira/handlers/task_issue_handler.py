@@ -18,6 +18,7 @@ class TaskIssueHandler(EntityIssueHandler):
     # if the Jira target is None, it means the target field is not settable
     # directly.
     __TASK_FIELDS_MAPPING = {
+        "sg_components": None, #SurviosBeginChange get the components field
         "content": "summary",
         "sg_description": "description",
         "sg_status_list": None,
@@ -33,6 +34,7 @@ class TaskIssueHandler(EntityIssueHandler):
     # if the Shotgun target is None, it means the target field is not settable
     # directly.
     __ISSUE_FIELDS_MAPPING = {
+        "Component/s": None,  #SurviosBeginChange get the components field
         "summary": "content",
         "description": "sg_description",
         "status": "sg_status_list",
@@ -238,6 +240,7 @@ class TaskIssueHandler(EntityIssueHandler):
                 sg_entity,
                 jira_project,
                 self._issue_type,
+                components=sg_entity["sg_components"], #SurviosBeginChange pull components field out of shotgun
                 summary=sg_entity["content"],
                 timetracking={
                     "originalEstimate": "%d m" % (sg_entity["est_in_mins"] or 0)
